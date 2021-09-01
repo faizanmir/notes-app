@@ -4,7 +4,6 @@ package com.notes.notesapp.user.user_service;
 import com.notes.notesapp.models.user_models.NotesUser;
 import com.notes.notesapp.user.user_repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

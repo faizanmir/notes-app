@@ -14,7 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
@@ -61,18 +64,18 @@ public class UserController {
     }
 
 
-    @PostMapping("/register")
-    public ResponseEntity<?> signUp(@RequestBody NotesUser notesUser) throws Exception {
-        System.out.println("Note User"+notesUser.toString());
-        notesUser.setId(sequenceGenerator.getSequenceNumber(NotesUser.SEQUENCE_NAME));
-        String jwt  = jwtUtils.createJwtToken(new HashMap<>(),notesUser.getUsername());
-        System.out.println(jwt);
-        notesUser.setJwt(jwt);
-       return ResponseEntity.ok(userService.saveUser(notesUser));
+    @PostMapping("/login")
+    public ResponseEntity<?> signUp(@RequestBody NotesUser notesUser) {
+        if (!userService.checkIfUserExistsByName(notesUser.getUsername())) {
+            notesUser.setId(sequenceGenerator.getSequenceNumber(NotesUser.SEQUENCE_NAME));
+            String jwt = jwtUtils.createJwtToken(new HashMap<>(), notesUser.getUsername());
+            notesUser.setJwt(jwt);
+            return ResponseEntity.ok(userService.saveUser(notesUser));
+        }else {
+           return signIn(new AuthRequest(notesUser.getUsername(), notesUser.getPassword()));
+        }
     }
 
-
-    @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody AuthRequest authRequest){
         try{
             authenticationManager.authenticate(
@@ -84,7 +87,7 @@ public class UserController {
         }
         UserDetails userDetails =  appUserDetailsService.loadUserByUsername(authRequest.getUsername());
         final String jwt  = jwtUtils.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthResponse(userService.updateJwt(jwt,authRequest.getUsername()).getJwt()));
+        return ResponseEntity.ok(userService.updateJwt(jwt,authRequest.getUsername()));
     }
 
 

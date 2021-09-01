@@ -2,10 +2,7 @@ package com.notes.notesapp.user.user_repo;
 
 import com.notes.notesapp.models.user_models.NotesUser;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository("userRepo")
 public interface UserRepo extends MongoRepository<NotesUser, String> {
